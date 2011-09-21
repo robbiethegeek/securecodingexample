@@ -1,0 +1,5 @@
+name = Secure coding example
+description = Demonstrates how to code badly.
+core = 6.x
+package = Example modules
+dependencies[] = "bad_judgement"
