@@ -129,16 +129,25 @@ function securecodingexample_simple() {
   global $user;
   $output = '<p>' . t('Welcome !user.', array(!user => $user->name)) . '</p>';
   $output .= '<p>' . t('Here are all the articles that mention you:') . '</p>';
-  // Get the most recent articles mentioning this user.
+  // Get some articles mentioning this user.
   $query = "SELECT n.title, n.nid FROM {node} n WHERE n.body LIKE " . $user->name . " LIMIT 10";
   $result = db_query($query);
   // Output the list.
   $table_rows = array();
   while ($row = db_fetch_object($result)) {
-    $table_rows[] = l($result->title, 'node/' . $result->nid);
+    $table_rows[] = array(
+      l($result->title, 'node/' . $result->nid),
+      l(t('vote up'), 'voteup/' . $result->nid),
+      l(t('vote down'), 'votedown/' . $result->nid),
+    );
   }
-  $header = array(t('Article'));
+  $header = array(t('Article'), t('Vote Up'), t('Vote Down'));
   $output .= theme('table', $header, $table_rows);
+  // Let the visitor complain if there's an inappropriate article about them.
+  $output .= '<p>' . t('If there are any inappropriate articles, please contact the site administrator at the following email address:') . '</p>';
+  // Load the admin account to get their current email address.
+  $user = user_load(array('uid' => 1));
+  $output .= '<p>' . t('@user at !email', array('@user' => $user->name, '!email' => $user->mail)) . '</p>';
   return $output;
 }
 
@@ -149,19 +158,16 @@ function securecodingexample_simple() {
  * implementation we instructed the menu system to extract the last two
  * parameters of the path and pass them to this function as arguments.
  */
-function securecodingexample_arguments($first, $second) {
-  // Make sure you don't trust the URL to be safe! Always check for exploits.
-  if (!is_numeric($first) || !is_numeric($second)) {
-    // We will just show a standard "access denied" page in this case.
-    drupal_access_denied();
-    return;  // We actually don't get here.
+function securecodingexample_arguments($vote, $nid) {
+  // Check if it's voteup or votedown.
+  if ($vote == 'voteup') {
+    $change = 1;
   }
-
-  $list[] = t("First number was @number.", array('@number' => $first));
-  $list[] = t("Second number was @number.", array('@number' => $second));
-  $list[] = t('The total was @number.', array('@number' => $first + $second));
-
-  return theme('item_list', $list);
+  else {
+    $change = -1;
+  }
+  // Update the database with the vote.
+  $query = "";
 }
 
 /**
