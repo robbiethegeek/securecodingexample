@@ -166,8 +166,24 @@ function securecodingexample_arguments($vote, $nid) {
   else {
     $change = -1;
   }
+  // Get the current vote.
+  $query = "SELECT s.vote FROM {securecodingexample} s WHERE s.nid = %s";
+  $current_vote = db_result(db_query($query, $nid));
   // Update the database with the vote.
-  $query = "";
+  $new_vote = (int)$current_vote + $change;
+  // If there's already a vote in the database, udpate the database.
+  if($current_vote !== FALSE) {
+    $query = "UPDATE {securecodingexample} s SET s.vote = %d WHERE s.nid = %d";
+    db_query($query, $new_vote, $nid);
+  }
+  // If the node doesn't have a vote, then insert the vote into the database.
+  else {
+    $query = "INSERT INTO {securecodingexample} (nid, vote) VALUES (%d, %d)";
+    db_query($query, $nid, $new_vote);
+  }
+  // Give the user some feedback.
+  $output = '<p>' . t('Thanks for your vote!') . '</p>';
+  return $output;
 }
 
 /**
