@@ -1,0 +1,35 @@
+<?php
+
+
+function securecodingexample_install() {
+  drupal_install_schema('securecodingexample');
+}
+
+/**
+ * Implementation of hook_schema().
+ */
+function securecodingexample_schema() {
+  $schema = array();
+
+  $schema['securecodingexample'] = array(
+    'fields' => array(
+      'nid' => array(
+        'description' => 'The primary identifier for a node.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE
+      ),
+      'vote' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The total number of votes this choice has received by all users.',
+      ),
+    ),
+    'indexes' => array(
+      'nid' => array('nid')
+    ),
+  );
+
+  return $schema;
+}
