@@ -127,7 +127,7 @@ function securecodingexample_description() {
  */
 function securecodingexample_simple() {
   global $user;
-  $output = '<p>' . t('Welcome !user.', array(!user => $user->name)) . '</p>';
+  $output = '<p>' . t('Welcome !user.', array('!user' => $user->name)) . '</p>';
   $output .= '<p>' . t('Here are all the articles that mention you:') . '</p>';
   // Get some articles mentioning this user.
   $query = "SELECT n.title, n.nid FROM {node} n WHERE n.body LIKE " . $user->name . " LIMIT 10";
